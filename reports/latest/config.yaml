@@ -1,3 +1,4 @@
 {
-  "tolerance_degrees": 15
+  "tolerance_degrees": 15,
+  "transport": "TCP/IP newline-delimited JSON with ACK"
 }

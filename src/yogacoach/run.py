@@ -1,17 +1,19 @@
 import argparse
-import pandas as pd
+
 import matplotlib.pyplot as plt
+import pandas as pd
+
 from .artifacts import environment, output_dir, save
-from .core import benchmark, perturb, score_pose
-
-
-LANDMARKS = {
-    "left_elbow": ((0, 0), (1, 0), (1, 1)),
-    "right_elbow": ((2, 0), (1, 0), (1, 1)),
-    "left_knee": ((0, 2), (0, 1), (1, 1)),
-    "right_knee": ((2, 2), (2, 1), (1, 1)),
-}
-TARGET = {name: 90.0 for name in LANDMARKS}
+from .core import (
+    ANGLE_TRIPLETS,
+    LANDMARK_NAMES,
+    benchmark,
+    packet_to_json,
+    perturb,
+    reference_tree_pose,
+    score_pose,
+    extract_angles,
+)
 
 
 def main():
@@ -19,17 +21,20 @@ def main():
     parser.add_argument("--smoke", action="store_true")
     args = parser.parse_args()
     out = output_dir(args.smoke)
+    reference = reference_tree_pose()
+    target = extract_angles(reference)
     noises = [0, 0.01] if args.smoke else [0, 0.01, 0.03, 0.05, 0.1, 0.2]
     rows = []
     for noise in noises:
         for seed in range(2 if args.smoke else 30):
-            result = score_pose(perturb(LANDMARKS, noise, seed), TARGET)
+            packet = score_pose(perturb(reference, noise, seed), target)
             rows.append(
                 {
                     "noise": noise,
                     "seed": seed,
-                    "score": result["score"],
-                    "feedback_count": len(result["feedback"]),
+                    "score": packet.score,
+                    "feedback_count": len(packet.prompts),
+                    "payload_bytes": len(packet_to_json(packet).encode()),
                 }
             )
     frame = pd.DataFrame(rows)
@@ -42,14 +47,38 @@ def main():
     save(
         out / "metrics.json",
         {
-            "latency_ms": benchmark(LANDMARKS, TARGET),
+            "geometry_latency_ms": benchmark(reference, target),
             "robustness": summary.to_dict(orient="records"),
         },
     )
-    save(out / "statistical_tests.json", {"seeds": int(frame.seed.nunique())})
+    save(
+        out / "statistical_tests.json",
+        {
+            "paper_user_study": {
+                "participants": 30,
+                "male": 23,
+                "female": 7,
+                "age_range": [22, 35],
+                "versions": ["baseline", "intermediate", "full"],
+                "criteria": ["ease_of_use", "interaction", "engagement", "informativeness", "retention"],
+                "raw_scores_available": False,
+            }
+        },
+    )
     save(out / "environment.json", environment())
-    save(out / "data_manifest.json", {"source": "synthetic normalized landmarks"})
-    save(out / "config.yaml", {"tolerance_degrees": 15})
+    save(
+        out / "data_manifest.json",
+        {
+            "source": "deterministic MediaPipe-compatible 33-landmark tree-pose fixture",
+            "landmarks": len(LANDMARK_NAMES),
+            "angles": len(ANGLE_TRIPLETS),
+            "camera_frames_included": False,
+        },
+    )
+    save(
+        out / "config.yaml",
+        {"tolerance_degrees": 15, "transport": "TCP/IP newline-delimited JSON with ACK"},
+    )
     (out / "run.log").write_text("completed\n")
     print(out)
 

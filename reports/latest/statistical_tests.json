@@ -1,3 +1,24 @@
 {
-  "seeds": 30
+  "paper_user_study": {
+    "age_range": [
+      22,
+      35
+    ],
+    "criteria": [
+      "ease_of_use",
+      "interaction",
+      "engagement",
+      "informativeness",
+      "retention"
+    ],
+    "female": 7,
+    "male": 23,
+    "participants": 30,
+    "raw_scores_available": false,
+    "versions": [
+      "baseline",
+      "intermediate",
+      "full"
+    ]
+  }
 }

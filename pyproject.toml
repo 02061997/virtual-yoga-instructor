@@ -1,7 +1,7 @@
 [project]
       name = "virtual-yoga-instructor"
       version = "1.0.0"
-      description = "Pose-geometry feedback engine with deterministic robustness and latency benchmarks."
+      description = "MediaPipe-compatible eight-angle yoga feedback engine with TCP/JSON integration."
       requires-python = ">=3.12,<3.13"
       dependencies = [
         "matplotlib>=3.9",

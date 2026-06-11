@@ -1,6 +1,16 @@
-# Virtual Yoga Instructor
+# Virtual Yoga Instructor Feedback Engine
 
-Reference reconstruction inspired by the CISS 2025 paper. The repository
-isolates the pose-geometry and feedback engine, with deterministic landmark
-perturbation tests and measured local latency. A webcam/MediaPipe adapter can
-be added after paper and original-interface review.
+Paper-faithful Python companion for *Virtual Yoga Instructor with Real-Time
+Feedback* (CISS 2025).
+
+It implements the MediaPipe 33-landmark schema, eight reference-pose joint
+angles, tolerance scoring, 16 directional correction prompts, marker
+coordinates, and acknowledged TCP/JSON messages for the Unity boundary.
+Unity/Mixamo/Blender assets and participant records are not redistributed.
+
+```bash
+uv sync
+make test
+make reproduce-smoke
+make reproduce-results
+```

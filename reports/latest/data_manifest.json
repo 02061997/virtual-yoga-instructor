@@ -1,3 +1,6 @@
 {
-  "source": "synthetic normalized landmarks"
+  "angles": 8,
+  "camera_frames_included": false,
+  "landmarks": 33,
+  "source": "deterministic MediaPipe-compatible 33-landmark tree-pose fixture"
 }

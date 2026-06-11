@@ -1,24 +1,20 @@
-# Verified Results
+# Results
 
-## Provenance
+## Published paper results
 
-This is a reconstructed geometry and feedback benchmark, not the original
-application code. Camera, MediaPipe, and end-to-end device latency experiments
-remain `NOT_RUN`.
+The paper evaluates 30 participants (23 male, 7 female, ages 22-35) across
+baseline, intermediate, and full versions using five Likert criteria: ease of
+use, interaction, engagement, informativeness, and retention. The paper states
+that the full version consistently performs best, but raw questionnaire values
+are unavailable and are therefore not reconstructed.
 
-## Local reproduction
+## Local reference results
 
-`make reproduce-results` completed locally on June 11, 2026.
+The June 11, 2026 deterministic tree-pose run validates all eight angles,
+correction prompts, JSON payloads, and landmark markers. Geometry-only scoring
+latency averaged 0.0185 ms on the local M3 Max. Mean score falls from 100 at
+zero noise to 27.92 at coordinate noise 0.20.
 
-| Landmark noise | Mean pose score | Std. dev. |
-|---|---:|---:|
-| 0.00 | 100.00 | 0.00 |
-| 0.01 | 99.07 | 0.41 |
-| 0.03 | 97.19 | 1.25 |
-| 0.05 | 95.29 | 2.10 |
-| 0.10 | 90.39 | 4.30 |
-| 0.20 | 79.71 | 8.53 |
-
-Pure scoring latency averaged 0.0267 ms per pose on the local M3 Max.
-That number excludes camera capture and landmark inference and must not be
-presented as end-to-end latency.
+Camera capture, MediaPipe inference, network latency, Unity rendering, and the
+original user study remain `NOT_RUN`; the geometry timing is not end-to-end
+latency.
