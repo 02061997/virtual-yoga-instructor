@@ -1,5 +1,7 @@
 {
-  "geometry_latency_ms": 0.01909295900259167,
+  "end_to_end_latency_ms": null,
+  "end_to_end_latency_status": "NOT_RUN",
+  "geometry_latency_ms": 0.017050834001565818,
   "robustness": [
     {
       "mean": 100.0,

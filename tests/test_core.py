@@ -7,6 +7,7 @@ from yogacoach.core import (
     encode_message,
     extract_angles,
     reference_tree_pose,
+    render_pose_frame,
     score_pose,
 )
 
@@ -35,3 +36,12 @@ def test_perfect_pose_and_protocol_roundtrip():
 def test_sixteen_directional_prompt_space():
     prompts = {f"{direction}_{joint}" for joint in ANGLE_TRIPLETS for direction in ("fold", "extend")}
     assert len(prompts) == 16
+
+
+def test_pose_renderer_marks_feedback_frame():
+    landmarks = reference_tree_pose()
+    target = extract_angles(landmarks)
+    packet = score_pose(landmarks, target)
+    image = render_pose_frame(landmarks, packet, size=256, title="test")
+    assert image.size == (256, 256)
+    assert image.mode == "RGB"

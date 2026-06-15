@@ -11,6 +11,7 @@ from .core import (
     packet_to_json,
     perturb,
     reference_tree_pose,
+    render_pose_frame,
     score_pose,
     extract_angles,
 )
@@ -39,6 +40,21 @@ def main():
             )
     frame = pd.DataFrame(rows)
     frame.to_parquet(out / "predictions.parquet", index=False)
+    demo_frames = []
+    demo_noises = [0, 0.03] if args.smoke else [0, 0.03, 0.1, 0.2]
+    for noise in demo_noises:
+        noisy = perturb(reference, noise, seed=13)
+        demo_frames.append(
+            render_pose_frame(noisy, score_pose(noisy, target), title=f"noise={noise}")
+        )
+    demo_frames[0].save(
+        out / "feedback_demo.gif",
+        save_all=True,
+        append_images=demo_frames[1:],
+        duration=850,
+        loop=0,
+    )
+    demo_frames[-1].save(out / "pose_feedback_overlay.png")
     summary = frame.groupby("noise").score.agg(["mean", "std"]).reset_index()
     ax = summary.plot(x="noise", y="mean", marker="o", legend=False, ylabel="Pose score")
     ax.figure.tight_layout()
@@ -48,6 +64,8 @@ def main():
         out / "metrics.json",
         {
             "geometry_latency_ms": benchmark(reference, target),
+            "end_to_end_latency_ms": None,
+            "end_to_end_latency_status": "NOT_RUN",
             "robustness": summary.to_dict(orient="records"),
         },
     )
@@ -66,7 +84,7 @@ def main():
             "not_run": [
                 {
                     "experiment": "camera plus MediaPipe plus Unity end-to-end latency",
-                    "reason": "Camera, Unity, Mixamo, and participant assets are not redistributed.",
+                    "reason": "Camera, MediaPipe inference, Unity, Mixamo, and participant assets are not redistributed.",
                 },
                 {
                     "experiment": "30-participant questionnaire reproduction",
@@ -83,6 +101,7 @@ def main():
             "landmarks": len(LANDMARK_NAMES),
             "angles": len(ANGLE_TRIPLETS),
             "camera_frames_included": False,
+            "demo_artifacts": ["feedback_demo.gif", "pose_feedback_overlay.png"],
         },
     )
     save(

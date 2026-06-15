@@ -1,6 +1,10 @@
 {
   "angles": 8,
   "camera_frames_included": false,
+  "demo_artifacts": [
+    "feedback_demo.gif",
+    "pose_feedback_overlay.png"
+  ],
   "landmarks": 33,
   "source": "deterministic MediaPipe-compatible 33-landmark tree-pose fixture"
 }

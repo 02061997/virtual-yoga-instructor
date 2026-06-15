@@ -2,7 +2,7 @@
   "not_run": [
     {
       "experiment": "camera plus MediaPipe plus Unity end-to-end latency",
-      "reason": "Camera, Unity, Mixamo, and participant assets are not redistributed."
+      "reason": "Camera, MediaPipe inference, Unity, Mixamo, and participant assets are not redistributed."
     },
     {
       "experiment": "30-participant questionnaire reproduction",

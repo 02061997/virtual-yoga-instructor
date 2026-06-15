@@ -15,6 +15,11 @@ correction prompts, JSON payloads, and landmark markers. Geometry-only scoring
 latency averaged 0.0191 ms on the local M3 Max. Mean score falls from 100 at
 zero noise to 27.92 at coordinate noise 0.20.
 
+The latest reproduction writes `feedback_demo.gif` and
+`pose_feedback_overlay.png` to `reports/latest/`. These synthetic visual
+artifacts show landmark-level feedback behavior but are not camera, MediaPipe,
+or Unity renders.
+
 Camera capture, MediaPipe inference, network latency, Unity rendering, and the
 original user study remain `NOT_RUN` and are recorded explicitly in
 `reports/latest/statistical_tests.json`; the geometry timing is not end-to-end

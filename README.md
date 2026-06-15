@@ -8,6 +8,10 @@ angles, tolerance scoring, 16 directional correction prompts, marker
 coordinates, and acknowledged TCP/JSON messages for the Unity boundary.
 Unity/Mixamo/Blender assets and participant records are not redistributed.
 
+Full runs generate `feedback_demo.gif` and `pose_feedback_overlay.png` under
+`reports/latest/` so the geometry feedback behavior can be inspected visually.
+These are synthetic landmark renders, not camera or Unity recordings.
+
 ```bash
 uv sync
 make test

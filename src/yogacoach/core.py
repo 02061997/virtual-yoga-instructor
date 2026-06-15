@@ -5,6 +5,7 @@ import time
 from dataclasses import dataclass
 
 import numpy as np
+from PIL import Image, ImageDraw
 
 
 LANDMARK_NAMES = (
@@ -27,6 +28,21 @@ ANGLE_TRIPLETS = {
     "left_knee": ("left_hip", "left_knee", "left_ankle"),
     "right_knee": ("right_hip", "right_knee", "right_ankle"),
 }
+
+SKELETON_EDGES = (
+    ("left_shoulder", "right_shoulder"),
+    ("left_shoulder", "left_elbow"),
+    ("left_elbow", "left_wrist"),
+    ("right_shoulder", "right_elbow"),
+    ("right_elbow", "right_wrist"),
+    ("left_shoulder", "left_hip"),
+    ("right_shoulder", "right_hip"),
+    ("left_hip", "right_hip"),
+    ("left_hip", "left_knee"),
+    ("left_knee", "left_ankle"),
+    ("right_hip", "right_knee"),
+    ("right_knee", "right_ankle"),
+)
 
 
 @dataclass(frozen=True)
@@ -120,6 +136,46 @@ def benchmark(landmarks: np.ndarray, target: dict[str, float], repeats: int = 10
     for _ in range(repeats):
         score_pose(landmarks, target)
     return (time.perf_counter() - start) * 1000 / repeats
+
+
+def render_pose_frame(
+    landmarks: np.ndarray,
+    packet: FeedbackPacket,
+    *,
+    size: int = 420,
+    title: str = "",
+) -> Image.Image:
+    if landmarks.shape != (33, 3):
+        raise ValueError("MediaPipe Pose landmarks must have shape (33, 3)")
+
+    active_names = sorted({name for edge in SKELETON_EDGES for name in edge})
+    points = landmarks[[LANDMARK_INDEX[name] for name in active_names], :2]
+    mins = points.min(axis=0)
+    maxs = points.max(axis=0)
+    span = np.maximum(maxs - mins, 1e-6)
+    padding = 36
+
+    def project(name: str) -> tuple[int, int]:
+        point = landmarks[LANDMARK_INDEX[name], :2]
+        scaled = (point - mins) / span
+        x = int(padding + scaled[0] * (size - 2 * padding))
+        y = int(size - padding - scaled[1] * (size - 2 * padding))
+        return x, y
+
+    image = Image.new("RGB", (size, size), "white")
+    draw = ImageDraw.Draw(image)
+    for left, right in SKELETON_EDGES:
+        draw.line([project(left), project(right)], fill=(70, 80, 110), width=4)
+    for name in active_names:
+        x, y = project(name)
+        fill = (220, 38, 38) if name in packet.prompts else (37, 99, 235)
+        draw.ellipse((x - 7, y - 7, x + 7, y + 7), fill=fill, outline=(20, 20, 30), width=1)
+    draw.text((14, 12), f"{title} score={packet.score:.1f}", fill=(20, 20, 30))
+    if packet.prompts:
+        draw.text((14, 32), f"feedback: {len(packet.prompts)} joints", fill=(150, 30, 30))
+    else:
+        draw.text((14, 32), "feedback: none", fill=(20, 120, 70))
+    return image
 
 
 def reference_tree_pose() -> np.ndarray:
