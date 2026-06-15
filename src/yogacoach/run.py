@@ -3,7 +3,7 @@ import argparse
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from .artifacts import environment, output_dir, save
+from .artifacts import environment, output_dir, publish_latest, save
 from .core import (
     ANGLE_TRIPLETS,
     LANDMARK_NAMES,
@@ -62,7 +62,17 @@ def main():
                 "versions": ["baseline", "intermediate", "full"],
                 "criteria": ["ease_of_use", "interaction", "engagement", "informativeness", "retention"],
                 "raw_scores_available": False,
-            }
+            },
+            "not_run": [
+                {
+                    "experiment": "camera plus MediaPipe plus Unity end-to-end latency",
+                    "reason": "Camera, Unity, Mixamo, and participant assets are not redistributed.",
+                },
+                {
+                    "experiment": "30-participant questionnaire reproduction",
+                    "reason": "Raw participant records are unavailable and should not be reconstructed.",
+                },
+            ],
         },
     )
     save(out / "environment.json", environment())
@@ -80,6 +90,8 @@ def main():
         {"tolerance_degrees": 15, "transport": "TCP/IP newline-delimited JSON with ACK"},
     )
     (out / "run.log").write_text("completed\n")
+    if not args.smoke:
+        publish_latest(out)
     print(out)
 
 

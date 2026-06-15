@@ -10,11 +10,12 @@ are unavailable and are therefore not reconstructed.
 
 ## Local reference results
 
-The June 11, 2026 deterministic tree-pose run validates all eight angles,
+The June 15, 2026 deterministic tree-pose run validates all eight angles,
 correction prompts, JSON payloads, and landmark markers. Geometry-only scoring
-latency averaged 0.0185 ms on the local M3 Max. Mean score falls from 100 at
+latency averaged 0.0191 ms on the local M3 Max. Mean score falls from 100 at
 zero noise to 27.92 at coordinate noise 0.20.
 
 Camera capture, MediaPipe inference, network latency, Unity rendering, and the
-original user study remain `NOT_RUN`; the geometry timing is not end-to-end
+original user study remain `NOT_RUN` and are recorded explicitly in
+`reports/latest/statistical_tests.json`; the geometry timing is not end-to-end
 latency.

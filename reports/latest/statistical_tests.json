@@ -1,4 +1,14 @@
 {
+  "not_run": [
+    {
+      "experiment": "camera plus MediaPipe plus Unity end-to-end latency",
+      "reason": "Camera, Unity, Mixamo, and participant assets are not redistributed."
+    },
+    {
+      "experiment": "30-participant questionnaire reproduction",
+      "reason": "Raw participant records are unavailable and should not be reconstructed."
+    }
+  ],
   "paper_user_study": {
     "age_range": [
       22,
